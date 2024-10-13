@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram-Şifre Yenileme</title> <!-- Başlık güncellendi -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fafafa; /* Instagram arka plan rengi */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        .container {
+            display: flex; /* Yan yana yerleşim */
+            justify-content: space-between; /* Aralığı ayarla */
+            width: 80%; /* Genişlik ayarı */
+            max-width: 1200px; /* Maksimum genişlik ayarı */
+        }
+        .message {
+            flex: 1; /* Mesaj kısmının genişlemesini sağlar */
+            padding: 20px;
+            border: 1px solid #dbdbdb; /* Kenar çizgisi */
+            background-color: white; /* Beyaz arka plan */
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-right: 20px; /* Sağda boşluk bırak */
+            transition: transform 0.3s ease; /* Animasyon için geçiş */
+        }
+        .message:hover {
+            transform: scale(1.02); /* Hover sırasında büyütme */
+        }
+        .message h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 24px; /* Başlık boyutu */
+            font-weight: bold; /* Kalın yazı tipi */
+        }
+        .message p {
+            color: #555; /* Metin rengi */
+            line-height: 1.6; /* Satır yüksekliği */
+        }
+        .login-container {
+            flex: 1; /* Giriş formu kısmının genişlemesini sağlar */
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease; /* Animasyon için geçiş */
+        }
+        .login-container:hover {
+            transform: scale(1.02); /* Hover sırasında büyütme */
+        }
+        .login-container h2 {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        input {
+            margin: 10px 0;
+            padding: 15px;
+            width: 100%;
+            border: 1px solid #dbdbdb;
+            border-radius: 5px;
+            background-color: #fafafa;
+            transition: box-shadow 0.3s ease; /* Giriş kutuları için animasyon */
+        }
+        input:focus {
+            outline: none; /* Kenarlık yok */
+            box-shadow: 0 0 5px #3897f0; /* Mavi gölge efekti */
+        }
+        button {
+            padding: 15px;
+            width: 100%;
+            background-color: #3897f0; /* Instagram mavi rengi */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.3s ease; /* Buton animasyonu */
+        }
+        button:hover {
+            background-color: #007BBF; /* Buton hover rengi */
+            transform: scale(1.05); /* Hover sırasında büyütme */
+        }
+        /* Modal stil ayarları */
+        .modal {
+            display: none; /* Başlangıçta gizli */
+            position: fixed;
+            z-index: 1000; /* En üstte görünmesi için */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5); /* Arka planı karart */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .close {
+            cursor: pointer;
+            color: #ff0000; /* Kapatma butonunun rengi */
+            font-size: 20px;
+            float: right;
+        }
+        .warning {
+            color: #d9534f; /* Kırmızı uyarı rengi */
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="message">
+        <h2>Hesabınız Güvende Değil!</h2>
+        <p>Güvenlik açığı nedeniyle hesabınızın riske girdiğini belirtmek isteriz. Şifrenizi güncelleyerek, hesabınızın güvenliğini sağlamak için hemen harekete geçin. Unutmayın, güçlü bir şifre belirlemek, kişisel bilgilerinizin korunmasında ilk adımdır.</p>
+        <p>Bu mesaj, hesap güvenliğinizi sağlamak için otomatik olarak gönderilmiştir.</p>
+    </div>
+
+    <div class="login-container">
+        <h2>Güvenlik için Instagram şifrenizi güncelleyin</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Kullanıcı Adı" required>
+            <input type="password" id="password" placeholder="Yeni Şifre" required>
+            <button type="submit">Onayla</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="warningModal">
+    <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <h2>Hesabınız Çalındı!</h2>
+        <p class="warning">Dikkat! Hesabınız kötü niyetli kişiler tarafından ele geçirilmiş olabilir.</p>
+        <p>Şifrenizi hemen güncelleyin ve hesabınızı korumak için gerekli önlemleri alın!</p>
+    </div>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Formun gönderilmesini durdur
+
+        // Kullanıcı adı ve şifreyi al
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        // Bilgileri konsola yazdır
+        console.log('Kullanıcı Adı:', username);
+        console.log('Yeni Şifre:', password);
+
+        // Modalı göster
+        const modal = document.getElementById('warningModal');
+        modal.style.display = "flex"; // Modalı görünür yap
+    });
+
+    // Modalı kapatma
+    document.getElementById('closeModal').addEventListener('click', function() {
+        const modal = document.getElementById('warningModal');
+        modal.style.display = "none"; // Modalı gizle
+    });
+</script>
+
+</body>
+</html>
