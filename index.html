@@ -172,30 +172,32 @@
             const results = document.getElementById('results');
 
             status.textContent = isCreatinGunu ? "Creatin Alma Günü" : "Detaylar"; // "Dinlenme" yerine "Detaylar" olarak değiştirildi
-            results.textContent = `Creatin Günleri: ${kullanGunu}, Toplam Kullandığınız Gün: ${toplamKullanilan}`; // "Detaylar" kısmı kaldırıldı
+            results.textContent = `Creatin Günleri: ${kullanGunu || 0}, Toplam Kullandığınız Gün: ${toplamKullanilan || 0}`; // "Detaylar" kısmı kaldırıldı
+            results.style.display = "block"; // Sonuçları görünür hale getir
         }
 
         function scheduleDailyNotification() {
             if (Notification.permission === "granted") {
                 const now = new Date();
-                const timeUntil8PM = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 0, 0, 0) - now;
+                const timeUntil8PM = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 0, 0) - now;
 
-                setTimeout(function() {
-                    sendNotification();
-                    setInterval(sendNotification, 86400000); 
-                }, timeUntil8PM);
-            } else if (Notification.permission !== "denied") {
+                if (timeUntil8PM > 0) {
+                    setTimeout(() => {
+                        new Notification("Creatin Hatırlatıcı", { body: "Creatin içmeyi unutmayın!" });
+                    }, timeUntil8PM);
+                }
+
+                const msInADay = 86400000; 
+                setInterval(() => {
+                    new Notification("Creatin Hatırlatıcı", { body: "Creatin içmeyi unutmayın!" });
+                }, msInADay);
+            } else {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
                         scheduleDailyNotification();
                     }
                 });
             }
-        }
-
-        function sendNotification() {
-            const message = isCreatinGunu ? "Creatin alma zamanı!" : "Bugün dinlenme günü.";
-            new Notification("Creatin Hatırlatıcı", { body: message });
         }
     </script>
 </body>
