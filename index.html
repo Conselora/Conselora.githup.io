@@ -65,7 +65,7 @@
         .button:hover {
             background-color: #0056b3;
         }
-        .status, .counter {
+        .status {
             margin-top: 20px;
             font-size: 20px;
             color: #333;
@@ -99,7 +99,7 @@
                 <input type="number" id="creatinDays" min="1" value="">
             </div>
             <div>
-                <label for="restDays">Detaylar:</label> <!-- Güncellenmiş ifade -->
+                <label for="restDays">Dinlenme:</label>
                 <input type="number" id="restDays" min="1" value="">
             </div>
             <button class="button" onclick="startCycle()">Döngüyü Başlat</button>
@@ -130,6 +130,7 @@
 
         function showInputFields() {
             document.getElementById('inputFields').style.display = 'block'; 
+            document.querySelector('.button').style.display = 'none'; // Butonu gizle
         }
 
         function startCycle() {
@@ -147,7 +148,9 @@
             clearInterval(interval); 
             interval = setInterval(countdown, 86400000); 
             scheduleDailyNotification();
-            document.getElementById('inputFields').style.display = 'none'; 
+            document.getElementById('inputFields').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            document.querySelector('.button').style.display = 'block'; // Butonu geri getir
         }
 
         function countdown() {
@@ -168,9 +171,8 @@
             const status = document.getElementById('status');
             const results = document.getElementById('results');
 
-            status.textContent = isCreatinGunu ? "Creatin Alma Günü" : "Detaylar"; // Güncellenmiş ifade
-            results.textContent = `Creatin Günleri: ${kullanGunu}, Detaylar: ${araGunu}, Toplam Kullandığınız Gün: ${toplamKullanilan}`;
-            results.style.display = "block"; 
+            status.textContent = isCreatinGunu ? "Creatin Alma Günü" : "Detaylar"; // "Dinlenme" yerine "Detaylar" olarak değiştirildi
+            results.textContent = `Creatin Günleri: ${kullanGunu}, Toplam Kullandığınız Gün: ${toplamKullanilan}`; // "Detaylar" kısmı kaldırıldı
         }
 
         function scheduleDailyNotification() {
@@ -192,7 +194,7 @@
         }
 
         function sendNotification() {
-            const message = isCreatinGunu ? "Creatin alma zamanı!" : "Bugün detayları kontrol et.";
+            const message = isCreatinGunu ? "Creatin alma zamanı!" : "Bugün dinlenme günü.";
             new Notification("Creatin Hatırlatıcı", { body: message });
         }
     </script>
