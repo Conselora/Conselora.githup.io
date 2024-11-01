@@ -121,7 +121,7 @@
             if (kullanGunu && araGunu) {
                 document.getElementById('creatinDays').value = kullanGunu; 
                 document.getElementById('restDays').value = araGunu; 
-                updateDisplay();
+                updateDisplay(); // Güncellemeyi burada yapıyoruz
                 if (kalanGun > 0) {
                     startCycle(); 
                 }
@@ -144,7 +144,7 @@
             toplamKullanilan = 0;
             localStorage.setItem('kalanGun', kalanGun); 
             localStorage.setItem('toplamKullanilan', toplamKullanilan); 
-            updateDisplay();
+            updateDisplay(); // Güncellemeyi burada yapıyoruz
             clearInterval(interval); 
             interval = setInterval(countdown, 86400000); 
             scheduleDailyNotification();
@@ -164,7 +164,7 @@
                 kalanGun = isCreatinGunu ? kullanGunu : araGunu;
             }
             localStorage.setItem('isCreatinGunu', isCreatinGunu); 
-            updateDisplay();
+            updateDisplay(); // Güncellemeyi burada yapıyoruz
         }
 
         function updateDisplay() {
