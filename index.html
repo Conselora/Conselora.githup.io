@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omnı</title>
+    <title>Omnı Chatbot</title>
     <style>
-        /* Stil kısmı önceki gibi kalabilir, sadece hata mesajlarını göstermek için yeni bir alan ekleyeceğiz */
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
@@ -126,6 +125,11 @@
             transform: scale(1.05);
         }
 
+        #send-button span {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -135,13 +139,6 @@
                 opacity: 1;
                 transform: translateY(0);
             }
-        }
-
-        #error-message {
-            color: red;
-            font-size: 1rem;
-            margin-top: 10px;
-            text-align: center;
         }
     </style>
 </head>
@@ -153,23 +150,21 @@
             <input type="text" id="user-input" placeholder="Bir şeyler sor..." onkeydown="if(event.key === 'Enter') sendMessage()">
             <button id="send-button" onclick="sendMessage()"><span>Send</span></button>
         </div>
-        <div id="error-message"></div> <!-- Hata mesajları buraya gelecek -->
     </div>
 
     <script>
         const chatBox = document.getElementById("chat-box");
         const userInput = document.getElementById("user-input");
-        const errorMessage = document.getElementById("error-message");
 
-        // OpenAI API anahtarınızı buraya ekleyin
-        const API_KEY = "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"; 
+        // Hugging Face API Key
+        const API_KEY = "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";
 
         async function sendMessage() {
             const userText = userInput.value.trim();
 
             if (userText === "") return;
 
-            // Kullanıcı mesajı ekle
+            // User's message
             const userMessage = document.createElement("div");
             userMessage.classList.add("message", "user");
             userMessage.textContent = userText;
@@ -177,47 +172,42 @@
 
             userInput.value = "";
 
-            // Bot yanıtı al
+            // Bot's response
+            const response = await getBotResponse(userText);
             const botMessage = document.createElement("div");
             botMessage.classList.add("message", "bot");
-            const botResponse = await getBotResponse(userText);
-
-            botMessage.textContent = botResponse;
+            botMessage.textContent = response;
             chatBox.appendChild(botMessage);
 
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
         async function getBotResponse(input) {
-            try {
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_KEY}`,
-                    },
-                    body: JSON.stringify({
-                        model: "gpt-3.5-turbo",
-                        messages: [{ role: "user", content: input }],
-                    }),
-                });
+            const url = "https://api-inference.huggingface.co/models/gpt2"; // Model URL, burada GPT-2 kullanıyoruz
 
-                const data = await response.json();
+            const headers = {
+                "Authorization": `Bearer ${API_KEY}`,
+                "Content-Type": "application/json"
+            };
 
-                if (!response.ok) {
-                    throw new Error(`API Error: ${data.error.message}`);
-                }
+            const data = JSON.stringify({
+                inputs: input
+            });
 
-                if (data.choices && data.choices.length > 0) {
-                    return data.choices[0].message.content;
-                } else {
-                    return "Bir şeyler yanlış gitti, tekrar deneyin.";
-                }
-            } catch (error) {
-                console.error('Hata:', error);
-                errorMessage.textContent = `Hata: ${error.message}`;
-                return "Bot şu an yanıt veremiyor, lütfen daha sonra tekrar deneyin.";
+            const response = await fetch(url, {
+                method: "POST",
+                headers: headers,
+                body: data
+            });
+
+            const responseData = await response.json();
+
+            // Check if the response contains 'error'
+            if (responseData.error) {
+                return "Bot şu an yanıt veremiyor. Lütfen tekrar deneyin.";
             }
+
+            return responseData[0].generated_text || "Yanıt alınamadı.";
         }
     </script>
 </body>
