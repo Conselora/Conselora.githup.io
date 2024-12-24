@@ -215,36 +215,10 @@
         const chatBox = document.getElementById("chat-box");
         const userInput = document.getElementById("user-input");
 
-        // OpenAI API Anahtarı
-        const apiKey = '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';
-
-        async function getBotResponseFromAPI(input) {
-            const url = 'https://api.openai.com/v1/completions';
-            const data = {
-                model: 'text-davinci-003',
-                prompt: input,
-                max_tokens: 150,
-                temperature: 0.7
-            };
-
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify(data)
-            });
-
-            const responseData = await response.json();
-            return responseData.choices[0].text.trim();
-        }
-
         async function sendMessage() {
             const userText = userInput.value.trim();
             if (userText === "") return;
 
-            // Kullanıcı mesajı ekleme
             const userMessage = document.createElement("div");
             userMessage.classList.add("message", "user");
             userMessage.textContent = userText;
@@ -252,14 +226,60 @@
 
             userInput.value = "";
 
-            // Bot yanıtı alma ve ekleme
-            const botResponse = await getBotResponseFromAPI(userText);
+            // 1 saniye bekleme ekleyelim
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            const response = await getBotResponse(userText);
             const botMessage = document.createElement("div");
             botMessage.classList.add("message", "bot");
-            botMessage.textContent = botResponse;
+            botMessage.textContent = response;
             chatBox.appendChild(botMessage);
 
             chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function getBotResponse(input) {
+            const apiKey = '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';
+            const url = 'https://api.openai.com/v1/chat/completions';  // Doğru endpoint
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            };
+
+            const body = JSON.stringify({
+                model: 'gpt-3.5-turbo',  // Güncel model
+                messages: [
+                    { role: "system", content: "You are a helpful assistant." },
+                    { role: "user", content: input }
+                ],
+                max_tokens: 150
+            });
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: headers,
+                    body: body
+                });
+
+                if (response.status === 429) {
+                    return "API sınırına ulaşıldı. Lütfen birkaç saniye bekleyin ve tekrar deneyin.";
+                }
+
+                const data = await response.json();
+                console.log('API Yanıtı:', data);
+
+                if (data.choices && data.choices[0]) {
+                    return data.choices[0].message.content.trim();
+                } else {
+                    console.error('Yanıt formatı beklenenden farklı:', data);
+                    return "Bot yanıt veremedi.";
+                }
+            } catch (error) {
+                console.error('API Hatası:', error);
+                return "Bir hata oluştu, lütfen tekrar deneyin.";
+            }
         }
     </script>
 </body>
