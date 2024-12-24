@@ -1,83 +1,218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesli Yanıt Botu</title>
+    <title>Omnı</title>
     <style>
+        /* Temanızdaki CSS kısmını değiştirmedim */
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-            background-color: #f5f5f5;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #121212;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
-        #start-button {
-            padding: 15px 30px;
-            font-size: 20px;
-            cursor: pointer;
-            background-color: #4CAF50;
+
+        #chat-container {
+            width: 100%;
+            max-width: 700px;
+            height: 85%;
+            background: #1e1e1e;
+            border-radius: 20px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: scroll;
+        }
+
+        #chat-header {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #fff;
+            padding: 15px;
+            background: #2c2f38;
+            text-align: center;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+        }
+
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #202020;
+            border-radius: 10px;
+            max-height: 70vh;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 15px 25px;
+            border-radius: 18px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .user {
+            background-color: #00aaff;
+            color: #fff;
+            align-self: flex-end;
+            text-align: right;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .bot {
+            background-color: #444444;
+            color: #fff;
+            align-self: flex-start;
+            text-align: left;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        #input-container {
+            display: flex;
+            padding: 15px;
+            background: #181818;
+            border-radius: 10px;
+            border-top: 1px solid #333;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 30px;
+            background: #2c2c2c;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: background 0.3s ease;
+        }
+
+        #user-input:focus {
+            background: #333;
+        }
+
+        #send-button {
+            padding: 12px 20px;
+            background-color: #00aaff;
             color: white;
             border: none;
-            border-radius: 5px;
-            margin-top: 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease, transform 0.2s;
+            margin-left: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        #start-button:hover {
-            background-color: #45a049;
+
+        #send-button:hover {
+            background-color: #0088cc;
+            transform: scale(1.05);
         }
-        #response {
-            margin-top: 30px;
-            font-size: 20px;
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scroll bar stili */
+        #chat-container::-webkit-scrollbar {
+            width: 10px;
+        }
+        #chat-container::-webkit-scrollbar-thumb {
+            background-color: #444444;
+            border-radius: 10px;
+            border: 2px solid #202020;
         }
     </style>
 </head>
 <body>
-    <h1>Sesli Yanıt Botu</h1>
-    <p>Komutunuzu söyleyin...</p>
-    <button id="start-button">Başlat</button>
-    <p id="response"></p>
+    <div id="chat-container">
+        <div id="chat-header">Omnı</div>
+        <div id="chat-box"></div>
+        <div id="input-container">
+            <input type="text" id="user-input" placeholder="Bir şeyler sor..." onkeydown="if(event.key === 'Enter') sendMessage()">
+            <button id="send-button" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
 
     <script>
-        // Tarayıcıdaki sesli komutları algılamak için SpeechRecognition API
-        const startButton = document.getElementById('start-button');
-        const responseElement = document.getElementById('response');
-        
-        // Sesli komut algılama
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'tr-TR'; // Türkçe dil seçimi
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        
-        // Butona tıklandığında sesli komut kaydını başlat
-        startButton.addEventListener('click', () => {
-            recognition.start();
-            responseElement.innerText = 'Dinliyorum...';
-        });
+        const chatBox = document.getElementById("chat-box");
+        const userInput = document.getElementById("user-input");
 
-        // Sesli komut alındığında
-        recognition.onresult = (event) => {
-            const command = event.results[0][0].transcript;
-            responseElement.innerText = `Dedin: "${command}"`;
-            
-            // Komuta göre yanıt verme
-            if (command.toLowerCase().includes('merhaba')) {
-                speak('Merhaba, size nasıl yardımcı olabilirim?');
-            } else if (command.toLowerCase().includes('nasılsın')) {
-                speak('Ben bir yapay zeka olduğum için duygularım yok, ama teşekkür ederim!');
-            } else {
-                speak('Üzgünüm, ne dediğinizi anlayamadım.');
-            }
-        };
+        const apiKey = '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';
 
-        // Hata durumu
-        recognition.onerror = (event) => {
-            responseElement.innerText = 'Bir hata oluştu: ' + event.error;
-        };
+        // OpenAI API'ye istek gönderme
+        async function getBotResponseFromAPI(input) {
+            const response = await fetch('https://api.openai.com/v1/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    model: 'text-davinci-003',
+                    prompt: input,
+                    max_tokens: 150,
+                }),
+            });
 
-        // Sesli yanıt için SpeechSynthesis API
-        function speak(text) {
-            const speech = new SpeechSynthesisUtterance(text);
-            speech.lang = 'tr-TR';
-            window.speechSynthesis.speak(speech);
+            const data = await response.json();
+            return data.choices[0].text.trim();
+        }
+
+        // Kullanıcı mesajını al ve API'den gelen cevabı göster
+        async function getBotResponse(input) {
+            input = input.trim(); // Girilen veriyi temizle
+
+            const botResponse = await getBotResponseFromAPI(input);
+
+            return botResponse;
+        }
+
+        // Kullanıcı mesajını chat kutusuna ekleyin
+        function sendMessage() {
+            const userText = userInput.value.trim();
+            if (userText === "") return;
+
+            const userMessage = document.createElement("div");
+            userMessage.classList.add("message", "user");
+            userMessage.textContent = userText;
+            chatBox.appendChild(userMessage);
+
+            userInput.value = "";
+
+            // API'den bot cevabını al
+            getBotResponse(userText).then(response => {
+                const botMessage = document.createElement("div");
+                botMessage.classList.add("message", "bot");
+                botMessage.textContent = response;
+                chatBox.appendChild(botMessage);
+
+                chatBox.scrollTop = chatBox.scrollHeight; // Chat kutusunu aşağı kaydır
+            });
         }
     </script>
 </body>
